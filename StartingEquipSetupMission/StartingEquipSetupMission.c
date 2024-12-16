@@ -28,14 +28,21 @@ class StartingEquipSetupMission: MissionServer
         EntityAI bat;
         ItemBase itemBs;
 
+        // Equip Hunting Jacket (replacing default Body slot)
+        itemClothing = player.FindAttachmentBySlotName("Body");
+        if (itemClothing)
+        {
+            player.GetInventory().LocalDestroyEntity(itemClothing); // Remove the default clothing in Body slot
+        }
+        itemClothing = player.GetInventory().CreateAttachment("HuntingJacket_Winter"); // Add Hunting Jacket to Body slot
+
         // Backpack Selection
-        string backpackArray[] = { "HuntingBag", "MountainBag_Red", "MountainBag_Green", "CoyoteBag_Brown" }; // Add other 64-slot backpacks here
-        int backpackIndex = Math.RandomInt(0, 4);
-        itemClothing = player.GetInventory().CreateInInventory(backpackArray[backpackIndex]);
+        string backpackArray[] = { "TaloonBag_Orange"  }; // Lets keep the array for now
+        itemClothing = player.GetInventory().CreateInInventory(backpackArray[0]);
 
         // Random Canned Food
-        string cannedFoodArray[] = { "CannedSardines", "CannedSpaghetti", "CannedBakedBeans", "CannedTuna" };
-        int foodIndex = Math.RandomInt(0, 4);
+        string cannedFoodArray[] = { "SpaghettiCan", "BakedBeansCan", "TunaCan" };
+        int foodIndex = Math.RandomInt(0, 3);
         player.GetInventory().CreateInInventory(cannedFoodArray[foodIndex]);
 
         if (itemClothing)
@@ -44,10 +51,6 @@ class StartingEquipSetupMission: MissionServer
             string knifeArray[] = { "KitchenKnife", "SteakKnife", "HuntingKnife", "CombatKnife" };
             int knifeIndex = Math.RandomInt(0, 4);
             itemClothing.GetInventory().CreateInInventory(knifeArray[knifeIndex]);
-
-            //add wepun to beat fags
-            bat = itemClothing.GetInventory().CreateInInventory("BaseballBat");
-            player.SetQuickBarEntityShortcut(bat, 0);
         }
 
         // Default Body, Legs, Feet setup
