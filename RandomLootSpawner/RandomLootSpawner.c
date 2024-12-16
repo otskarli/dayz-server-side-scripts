@@ -61,8 +61,31 @@ void RandomLootSpawner()
     }
 }
 
+void AdjustLootSpawnRate()
+{
+    // Get all players on the server
+    array<Man> players = new array<Man>();
+    GetGame().GetPlayers(players);
+
+    int playerCount = players.Count();
+
+    const float minInterval = 3600.0; // 1 hour in seconds
+    const float maxInterval = 10800.0; // 3 hours in seconds
+
+    // Calculate the interval based on player count
+    float interval = maxInterval - ((maxInterval - minInterval) / 63) * (playerCount - 1);
+    interval = Math.Clamp(interval, minInterval, maxInterval);
+
+    // Schedule the loot spawner with the new interval
+    GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(RandomLootSpawner, interval * 1000, true);
+
+    // Re-schedule AdjustLootSpawnRate itself to check again in 5 minutes
+    const float adjustmentInterval = 60.0; // 5 minutes in seconds
+    GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(AdjustLootSpawnRate, adjustmentInterval * 1000, false);
+}
+
 void InitLootSpawner()
 {
-    const float interval = 600.0; // 10 minutes in seconds
-    GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(RandomLootSpawner, interval * 1000, true);
+    // Call AdjustLootSpawnRate immediately, and schedule it if necessary
+    AdjustLootSpawnRate();
 }
